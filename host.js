@@ -73,7 +73,7 @@
       .catch(function () { return null; });
   }
 
-  function putFile(path, b64, message) {
+  function putFileOnce(path, b64, message) {
     return getSha(path).then(function (sha) {
       var body = { message: message, content: b64, branch: CFG.branch };
       if (sha) body.sha = sha;
@@ -84,10 +84,14 @@
       }).then(function (r) {
         if (!r.ok) {
           return r.text().then(function (t) {
-            // A stale sha means someone (or another tab) wrote first. Drop the
-            // cached sha so the next attempt re-reads and wins.
+            // A stale sha means someone (or another tab, or another write in
+            // this same batch) committed first. Drop the cached sha so a
+            // retry re-reads the real current version instead of repeating
+            // the same guess.
             delete shaCache[path];
-            throw new Error('GitHub ' + r.status + ' on ' + path + ': ' + t.slice(0, 200));
+            var err = new Error('GitHub ' + r.status + ' on ' + path + ': ' + t.slice(0, 200));
+            err.status = r.status;
+            throw err;
           });
         }
         return r.json();
@@ -95,6 +99,16 @@
         shaCache[path] = j && j.content ? j.content.sha : null;
         return j;
       });
+    });
+  }
+
+  function putFile(path, b64, message) {
+    // A 409 (sha conflict) is an expected race between two writes to the
+    // same file, not a real failure — one retry with the freshly re-read
+    // sha resolves it. Anything else (401/403/network) surfaces as-is.
+    return putFileOnce(path, b64, message).catch(function (err) {
+      if (err && err.status === 409) return putFileOnce(path, b64, message);
+      throw err;
     });
   }
 
