@@ -22,6 +22,21 @@
     }
     @keyframes blink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Every clickable div in this page also carries role="button" tabIndex="0"
+       in the markup — this ring is the only focus indicator any of them get. */
+    :focus-visible {
+      outline: 3px solid oklch(0.55 0.06 145);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    [role="button"] { cursor: pointer; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
   </style>
 </helmet>
 
@@ -32,17 +47,17 @@
 
       <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 6px;">
         <div style="text-align: center;">
-          <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 34px; color: oklch(0.4 0.05 30); letter-spacing: 0.5px;">For my baby ♡</div>
+          <h1 style="margin: 0; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 34px; color: oklch(0.4 0.05 30); letter-spacing: 0.5px;">For my baby ♡</h1>
           <div style="font-size: 12px; color: oklch(0.5 0.03 60); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;">ONE FLOWER FOR EACH MONTH...</div>
         </div>
       </div>
 
       <div style="display: flex; gap: 8px; margin-bottom: 14px;">
         <sc-for list="{{ yearTabs }}" as="yt" hint-placeholder-count="1">
-          <div onClick="{{ yt.select }}" style="padding: 6px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; background: {{ yt.bg }}; color: {{ yt.color }}; border: 1.5px solid oklch(0.55 0.05 50 / 0.4);">{{ yt.label }}</div>
+          <div onClick="{{ yt.select }}" onKeyDown="{{ yt.onKeyDown }}" role="button" tabIndex="0" aria-pressed="{{ yt.active }}" style="padding: 6px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; background: {{ yt.bg }}; color: {{ yt.color }}; border: 1.5px solid oklch(0.55 0.05 50 / 0.4);">{{ yt.label }}</div>
         </sc-for>
         <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-          <div onClick="{{ addMonth }}" style="padding: 6px 16px; border-radius: 999px; font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">+ add next month</div>
+          <div onClick="{{ addMonth }}" onKeyDown="{{ addMonthKey }}" role="button" tabIndex="0" style="padding: 6px 16px; border-radius: 999px; font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">+ add next month</div>
         </sc-if>
       </div>
 
@@ -52,32 +67,32 @@
           <sc-for list="{{ flowers }}" as="fl" hint-placeholder-count="10">
             <div style="position: relative; width: 100%; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
 
-              <div onClick="{{ fl.select }}" onMouseEnter="{{ fl.onEnter }}" onMouseLeave="{{ fl.onLeave }}" style="position: relative; width: 68px; height: 68px; margin-bottom: -6px; transform: rotate({{ fl.rot }}); cursor: pointer; transition: transform 0.25s ease, filter 0.25s ease; filter: {{ fl.ringFilter }}; z-index: 2;" style-hover="transform: rotate({{ fl.rot }}) translateY(-6px) scale(1.12); filter: drop-shadow(0 6px 14px oklch(0.3 0.05 40 / 0.28));">
+              <div onClick="{{ fl.select }}" onKeyDown="{{ fl.onKeyDown }}" onMouseEnter="{{ fl.onEnter }}" onMouseLeave="{{ fl.onLeave }}" onFocus="{{ fl.onEnter }}" onBlur="{{ fl.onLeave }}" role="button" tabIndex="0" aria-label="{{ fl.ariaLabel }}" style="position: relative; width: 68px; height: 68px; margin-bottom: -6px; transform: rotate({{ fl.rot }}); cursor: pointer; transition: transform 0.25s ease, filter 0.25s ease; filter: {{ fl.ringFilter }}; z-index: 2;" style-hover="transform: rotate({{ fl.rot }}) translateY(-6px) scale(1.12); filter: drop-shadow(0 6px 14px oklch(0.3 0.05 40 / 0.28));">
                 <sc-if value="{{ fl.isHovered }}" hint-placeholder-val="{{ false }}">
-                  <div style="position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%); background: oklch(0.3 0.03 50 / 0.92); color: oklch(0.97 0.01 90); padding: 5px 12px; border-radius: 8px; font-size: 13px; font-family: 'Quicksand', sans-serif; font-weight: 600; white-space: nowrap; pointer-events: none; z-index: 5;">{{ fl.month }}</div>
+                  <div aria-hidden="true" style="position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%); background: oklch(0.3 0.03 50 / 0.92); color: oklch(0.97 0.01 90); padding: 5px 12px; border-radius: 8px; font-size: 13px; font-family: 'Quicksand', sans-serif; font-weight: 600; white-space: nowrap; pointer-events: none; z-index: 5;">{{ fl.month }}</div>
                 </sc-if>
                 <sc-if value="{{ fl.isBloom }}" hint-placeholder-val="{{ true }}">
                   <sc-for list="{{ fl.petals }}" as="pt" hint-placeholder-count="6">
-                    <div style="position: absolute; top: 50%; left: 50%; width: 20px; height: 30px; margin: -15px 0 0 -10px; border-radius: 60% 60% 55% 55%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
+                    <div aria-hidden="true" style="position: absolute; top: 50%; left: 50%; width: 20px; height: 30px; margin: -15px 0 0 -10px; border-radius: 60% 60% 55% 55%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
                   </sc-for>
-                  <div style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: {{ fl.centerColor }};"></div>
+                  <div aria-hidden="true" style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: {{ fl.centerColor }};"></div>
                 </sc-if>
                 <sc-if value="{{ fl.isSpike }}" hint-placeholder-val="{{ false }}">
                   <sc-for list="{{ fl.florets }}" as="ft" hint-placeholder-count="5">
-                    <div style="position: absolute; bottom: {{ ft.y }}; left: 50%; width: {{ ft.size }}; height: {{ ft.size }}; margin-left: {{ ft.x }}; border-radius: 50%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35);"></div>
+                    <div aria-hidden="true" style="position: absolute; bottom: {{ ft.y }}; left: 50%; width: {{ ft.size }}; height: {{ ft.size }}; margin-left: {{ ft.x }}; border-radius: 50%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35);"></div>
                   </sc-for>
                 </sc-if>
                 <sc-if value="{{ fl.viewed }}" hint-placeholder-val="{{ false }}">
-                  <div style="position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.55 0.06 145); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4;">✓</div>
+                  <div aria-hidden="true" style="position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.55 0.06 145); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4;">✓</div>
                 </sc-if>
                 <sc-if value="{{ fl.canRemove }}" hint-placeholder-val="{{ false }}">
-                  <div onClick="{{ fl.remove }}" style="position: absolute; top: -6px; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.4 0.03 50 / 0.85); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4; cursor: pointer;" style-hover="background: oklch(0.5 0.15 25);">✕</div>
+                  <div onClick="{{ fl.remove }}" onKeyDown="{{ fl.removeKey }}" role="button" tabIndex="0" aria-label="Remove {{ fl.month }}" style="position: absolute; top: -6px; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.4 0.03 50 / 0.85); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4; cursor: pointer;" style-hover="background: oklch(0.5 0.15 25);">✕</div>
                 </sc-if>
               </div>
 
-              <div style="width: 3px; height: {{ fl.stemPx }}; background: linear-gradient(oklch(0.55 0.07 145), oklch(0.42 0.06 140)); z-index: 1;"></div>
+              <div aria-hidden="true" style="width: 3px; height: {{ fl.stemPx }}; background: linear-gradient(oklch(0.55 0.07 145), oklch(0.42 0.06 140)); z-index: 1;"></div>
 
-              <div style="position: relative; width: 58px; height: 66px; clip-path: polygon(10% 0%, 90% 0%, 74% 100%, 26% 100%); background: linear-gradient(160deg, oklch(0.7 0.06 {{ fl.vaseHue }} / 0.9), oklch(0.55 0.07 {{ fl.vaseHue }} / 0.95)); z-index: 0;">
+              <div aria-hidden="true" style="position: relative; width: 58px; height: 66px; clip-path: polygon(10% 0%, 90% 0%, 74% 100%, 26% 100%); background: linear-gradient(160deg, oklch(0.7 0.06 {{ fl.vaseHue }} / 0.9), oklch(0.55 0.07 {{ fl.vaseHue }} / 0.95)); z-index: 0;">
                 <div style="position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 56px; height: 8px; border-radius: 50%; background: oklch(0.75 0.05 {{ fl.vaseHue }} / 0.95); border: 1.5px solid oklch(0.8 0.04 {{ fl.vaseHue }} / 0.7);"></div>
               </div>
             </div>
@@ -85,11 +100,11 @@
         </div>
 
         <sc-if value="{{ bouquetUnlocked }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ openLetter }}" style="width: 110px; height: 110px; cursor: pointer; animation: pulseGlow 2.4s ease-in-out infinite; border-radius: 50%; position: relative;" style-hover="transform: scale(1.1);">
+          <div onClick="{{ openLetter }}" onKeyDown="{{ openLetterKey }}" role="button" tabIndex="0" aria-label="Open your letter" style="width: 110px; height: 110px; cursor: pointer; animation: pulseGlow 2.4s ease-in-out infinite; border-radius: 50%; position: relative;" style-hover="transform: scale(1.1);">
             <sc-for list="{{ bouquetPetals }}" as="pt" hint-placeholder-count="8">
-              <div style="position: absolute; top: 50%; left: 50%; width: 26px; height: 40px; margin: -20px 0 0 -13px; border-radius: 60% 60% 55% 55%; background: oklch(0.97 0.01 90); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
+              <div aria-hidden="true" style="position: absolute; top: 50%; left: 50%; width: 26px; height: 40px; margin: -20px 0 0 -13px; border-radius: 60% 60% 55% 55%; background: oklch(0.97 0.01 90); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
             </sc-for>
-            <div style="position: absolute; top: 50%; left: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: oklch(0.8 0.13 85);"></div>
+            <div aria-hidden="true" style="position: absolute; top: 50%; left: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: oklch(0.8 0.13 85);"></div>
           </div>
         </sc-if>
       </div>
@@ -99,18 +114,18 @@
       </div>
 
       <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-        <div onClick="{{ resetProgress }}" style="position: fixed; bottom: 10px; right: 16px; font-size: 11px; color: oklch(0.6 0.02 60); cursor: pointer; opacity: 0.5; z-index: 6;">reset memories</div>
+        <div onClick="{{ resetProgress }}" onKeyDown="{{ resetProgressKey }}" role="button" tabIndex="0" style="position: fixed; bottom: 10px; right: 16px; font-size: 11px; color: oklch(0.6 0.02 60); cursor: pointer; opacity: 0.5; z-index: 6;">reset memories</div>
       </sc-if>
     </div>
   </sc-if>
 
   <sc-if value="{{ isFlower }}" hint-placeholder-val="{{ false }}">
     <div style="position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 24px 60px; animation: fadeUp 0.4s ease;">
-      <div onClick="{{ backToGarden }}" style="align-self: flex-start; font-size: 15px; color: oklch(0.5 0.06 145); cursor: pointer; margin-bottom: 8px; font-weight: 600;">← back to the garden</div>
+      <div onClick="{{ backToGarden }}" onKeyDown="{{ backToGardenKey }}" role="button" tabIndex="0" style="align-self: flex-start; font-size: 15px; color: oklch(0.5 0.06 145); cursor: pointer; margin-bottom: 8px; font-weight: 600;">← back to the garden</div>
 
-      <div style="text-align: center; margin-bottom: 20px;">
+      <div style="text-align: center; margin-bottom: 28px;">
         <div style="font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: oklch(0.55 0.05 50);">{{ activeFlower.month }} · Year {{ activeFlower.year }}</div>
-        <div style="font-family: 'Cormorant Garamond', serif; font-size: 38px; color: oklch(0.35 0.04 40);">{{ activeFlower.name }}</div>
+        <h1 style="margin: 0; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-size: 38px; color: oklch(0.35 0.04 40);">{{ activeFlower.name }}</h1>
         <div style="font-size: 14px; font-style: italic; color: oklch(0.55 0.03 60);">{{ activeFlower.meaning }}</div>
       </div>
 
@@ -123,17 +138,17 @@
       <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
         <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
           <div style="font-size: 12px; color: oklch(0.55 0.03 60);">double-click the photo to drag/zoom/crop it · Replace to swap it</div>
-          <div onClick="{{ rotateImage }}" style="font-size: 12px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 4px 10px; border: 1.5px solid oklch(0.55 0.05 50 / 0.4); border-radius: 999px; font-weight: 600; white-space: nowrap;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">⟳ rotate</div>
+          <div onClick="{{ rotateImage }}" onKeyDown="{{ rotateImageKey }}" role="button" tabIndex="0" aria-label="Rotate photo 90 degrees" style="font-size: 12px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 4px 10px; border: 1.5px solid oklch(0.55 0.05 50 / 0.4); border-radius: 999px; font-weight: 600; white-space: nowrap;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">⟳ rotate</div>
         </div>
       </sc-if>
 
       <sc-if value="{{ showMeta }}" hint-placeholder-val="{{ true }}">
-        <div style="display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; justify-content: center;">
+        <div style="display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; justify-content: center;">
           <sc-if value="{{ showDate }}" hint-placeholder-val="{{ true }}">
             <div style="display: flex; align-items: center; gap: 5px;">
               <span style="font-size: 15px;">📅</span>
               <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-                <input type="text" value="{{ currentDate }}" onChange="{{ setDate }}" placeholder="add a date" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 110px; outline: none; text-align: center;"></input>
+                <input type="text" value="{{ currentDate }}" onChange="{{ setDate }}" placeholder="add a date" aria-label="Date" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 110px; text-align: center;"></input>
               </sc-if>
               <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
                 <span style="font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40);">{{ currentDate }}</span>
@@ -144,7 +159,7 @@
             <div style="display: flex; align-items: center; gap: 5px;">
               <span style="font-size: 15px;">📍</span>
               <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-                <input type="text" value="{{ currentLocation }}" onChange="{{ setLocation }}" placeholder="add a location" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 140px; outline: none; text-align: center;"></input>
+                <input type="text" value="{{ currentLocation }}" onChange="{{ setLocation }}" placeholder="add a location" aria-label="Location" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 140px; text-align: center;"></input>
               </sc-if>
               <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
                 <span style="font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40);">{{ currentLocation }}</span>
@@ -155,7 +170,7 @@
       </sc-if>
 
       <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-        <textarea value="{{ currentCaption }}" onChange="{{ setCaption }}" placeholder="write a caption for this photo" rows="2" style="max-width: 480px; width: 90%; text-align: center; font-size: 18px; line-height: 1.6; color: oklch(0.3 0.03 50); margin: 12px 20px 8px; font-family: 'Cormorant Garamond', serif; background: transparent; border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.4); resize: none; outline: none; padding: 4px;"></textarea>
+        <textarea value="{{ currentCaption }}" onChange="{{ setCaption }}" placeholder="write a caption for this photo" aria-label="Caption" rows="2" style="max-width: 480px; width: 90%; text-align: center; font-size: 18px; line-height: 1.6; color: oklch(0.3 0.03 50); margin: 12px 20px 8px; font-family: 'Cormorant Garamond', serif; background: transparent; border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.4); resize: none; padding: 4px;"></textarea>
       </sc-if>
       <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
         <div style="max-width: 480px; width: 90%; text-align: center; font-size: 18px; line-height: 1.6; color: oklch(0.3 0.03 50); margin: 12px 20px 8px; font-family: 'Cormorant Garamond', serif;">{{ currentCaption }}</div>
@@ -163,7 +178,7 @@
 
       <div style="display: flex; gap: 8px; margin: 6px 0 22px;">
         <sc-for list="{{ activeFlower.slides }}" as="sd" hint-placeholder-count="3">
-          <div onClick="{{ sd.go }}" style="width: 8px; height: 8px; border-radius: 50%; cursor: pointer; background: {{ sd.dotColor }};"></div>
+          <div onClick="{{ sd.go }}" onKeyDown="{{ sd.goKey }}" role="button" tabIndex="0" aria-label="{{ sd.ariaLabel }}" aria-current="{{ sd.current }}" style="width: 8px; height: 8px; border-radius: 50%; cursor: pointer; background: {{ sd.dotColor }};"></div>
         </sc-for>
       </div>
 
@@ -180,13 +195,13 @@
       </div>
 
       <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
-        <div style="display: flex; gap: 10px; margin-top: 14px;">
-          <div onClick="{{ addPhotoSlide }}" style="font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.6);">+ insert a photo after this one</div>
+        <div style="display: flex; gap: 10px; margin-top: 32px; padding-top: 18px; border-top: 1px solid oklch(0.55 0.05 50 / 0.18);">
+          <div onClick="{{ addPhotoSlide }}" onKeyDown="{{ addPhotoSlideKey }}" role="button" tabIndex="0" style="font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.6);">+ insert a photo after this one</div>
           <sc-if value="{{ canDeleteSlide }}" hint-placeholder-val="{{ false }}">
-            <div onClick="{{ deletePhotoSlide }}" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this photo</div>
+            <div onClick="{{ deletePhotoSlide }}" onKeyDown="{{ deletePhotoSlideKey }}" role="button" tabIndex="0" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this photo</div>
           </sc-if>
           <sc-if value="{{ activeFlower.isCustom }}" hint-placeholder-val="{{ false }}">
-            <div onClick="{{ deleteThisMonth }}" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this month</div>
+            <div onClick="{{ deleteThisMonth }}" onKeyDown="{{ deleteThisMonthKey }}" role="button" tabIndex="0" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this month</div>
           </sc-if>
         </div>
       </sc-if>
@@ -194,9 +209,9 @@
   </sc-if>
 
   <sc-if value="{{ isLetter }}" hint-placeholder-val="{{ false }}">
-    <div style="position: fixed; inset: 0; background: oklch(0.3 0.03 50 / 0.55); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 10; animation: fadeUp 0.35s ease; overflow-y: auto;">
+    <div role="dialog" aria-modal="true" aria-labelledby="letter-heading" style="position: fixed; inset: 0; background: oklch(0.3 0.03 50 / 0.55); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 10; animation: fadeUp 0.35s ease; overflow-y: auto;">
       <div style="max-width: 520px; width: 100%; background: oklch(0.97 0.015 80); border-radius: 18px; padding: 44px 40px; box-shadow: 0 20px 50px oklch(0.3 0.05 40 / 0.35); text-align: center; margin: auto;">
-        <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 30px; color: oklch(0.4 0.06 30); margin-bottom: 18px;">My baobae,</div>
+        <h2 id="letter-heading" style="margin: 0 0 18px; font-weight: 400; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 30px; color: oklch(0.4 0.06 30);">My baobae,</h2>
         <p style="font-size: 17px; line-height: 1.8; color: oklch(0.3 0.03 50); font-family: 'Cormorant Garamond', serif; text-align: left; margin: 0 0 14px;">Ten flowers, ten months, one very lucky bao. Every bloom in that vase is a little piece of a memory I never want to forget — the laughs, the inside jokes, the ordinary Tuesdays that somehow felt like the best days.</p>
         <p style="font-size: 17px; line-height: 1.8; color: oklch(0.3 0.03 50); font-family: 'Cormorant Garamond', serif; text-align: left; margin: 0 0 14px;">Since November 7th, you've been my favorite person to text good morning, my favorite person to annoy, and my favorite person, period. Here's to every month after this one too.</p>
         <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: oklch(0.4 0.06 30); margin: 20px 0 26px;">Happy Girlfriend Day, baby. I love you. — bubs</div>
@@ -258,6 +273,18 @@ const FLORET_LAYOUT = [
   { y: '39px', x: '5px', size: '11px' },
   { y: '50px', x: '0px', size: '9px' }
 ];
+
+// Every clickable <div> in the template also gets role="button" tabIndex="0";
+// this turns Enter/Space on it into the same activation a click gives, since
+// a plain div (unlike <button>) has no built-in key handling of its own.
+function keyActivate(fn) {
+  return function (e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      fn(e);
+    }
+  };
+}
 
 const SLIDE_CAPTIONS = {
   'y1-c0': ['The month it all started, bao ♡ (drop our first photo here)', 'Still can\'t believe you said yes.', 'Loyal and joyful, just like you.', 'A memory from November.', 'A memory from November.'],
@@ -445,11 +472,14 @@ class Component extends DCLogic {
 
     var yearTabs = years.map(function (y) {
       var active = y === self.state.activeYear;
+      var doSelect = function () { self.setState({ activeYear: y }); };
       return {
         label: 'Year ' + y,
         bg: active ? 'oklch(0.55 0.06 145)' : 'transparent',
         color: active ? 'white' : 'oklch(0.4 0.05 40)',
-        select: function () { self.setState({ activeYear: y }); }
+        active: active,
+        select: doSelect,
+        onKeyDown: keyActivate(doSelect)
       };
     });
 
@@ -458,6 +488,8 @@ class Component extends DCLogic {
     var flowers = flowersInYear.map(function (f) {
       var viewed = viewedIds.indexOf(f.id) !== -1;
       var isCustom = !BASE_IDS[f.id];
+      var doSelect = function () { self.selectFlower(f.id); };
+      var doRemove = function (e) { if (e && e.stopPropagation) e.stopPropagation(); self.deleteMonth(f.id); };
       return Object.assign({}, f, {
         viewed: viewed,
         ringFilter: viewed ? 'drop-shadow(0 0 6px oklch(0.55 0.06 145 / 0.6))' : 'none',
@@ -469,10 +501,13 @@ class Component extends DCLogic {
         isHovered: self.state.hoveredId === f.id,
         isCustom: isCustom,
         canRemove: isCustom && canEdit,
-        select: function () { self.selectFlower(f.id); },
+        ariaLabel: f.month + ' — ' + f.name + (viewed ? ', viewed' : ''),
+        select: doSelect,
+        onKeyDown: keyActivate(doSelect),
         onEnter: function () { self.setState({ hoveredId: f.id }); },
         onLeave: function () { self.setState({ hoveredId: null }); },
-        remove: function (e) { if (e && e.stopPropagation) e.stopPropagation(); self.deleteMonth(f.id); }
+        remove: doRemove,
+        removeKey: keyActivate(doRemove)
       });
     });
 
@@ -497,10 +532,15 @@ class Component extends DCLogic {
         if (savedCap !== undefined && savedCap !== null) cap = savedCap;
         else if (key.charAt(0) === 'd') cap = presetCaptions[parseInt(key.slice(1), 10)] || ('A memory from ' + activeRaw.month + '.');
         else cap = 'A memory from ' + activeRaw.month + '.';
+        var isCurrent = i === idx;
+        var doGo = function () { self.setState({ activeSlide: i }); };
         return {
           caption: cap,
-          dotColor: i === idx ? 'oklch(0.55 0.1 25)' : 'oklch(0.85 0.02 60)',
-          go: function () { self.setState({ activeSlide: i }); }
+          dotColor: isCurrent ? 'oklch(0.55 0.1 25)' : 'oklch(0.85 0.02 60)',
+          current: isCurrent,
+          ariaLabel: (isCurrent ? 'Current photo, ' : 'Go to photo ') + (i + 1),
+          go: doGo,
+          goKey: keyActivate(doGo)
         };
       });
 
@@ -528,6 +568,21 @@ class Component extends DCLogic {
 
     var curMeta = currentImageId ? (self.state.slideMeta[currentImageId] || {}) : {};
 
+    // Declared once so each gets exactly one onKeyDown wrapper below, instead
+    // of duplicating the click-handler body for a separate keydown version.
+    var doOpenLetter = function () { self.setState({ view: 'letter' }); };
+    var doBackToGarden = function () { self.setState({ view: 'garden' }); };
+    var doAddMonth = function () { self.addMonth(); };
+    var doAddPhotoSlide = function () { if (activeRaw) self.insertPhotoAfter(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); };
+    var doDeletePhotoSlide = function () { if (activeRaw) self.deletePhotoAt(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); };
+    var doRotateImage = function () { if (currentImageId) self.rotateImage(currentImageId); };
+    var doDeleteThisMonth = function () { if (activeRaw) { self.deleteMonth(activeRaw.id); self.setState({ view: 'garden' }); } };
+    var doResetProgress = function () {
+      STORE.set('viewedIds', []);
+      STORE.set('bouquetUnlocked', false);
+      self.setState({ viewedIds: [], bouquetUnlocked: false });
+    };
+
     return {
       canEdit: canEdit,
       // Visitors get plain text, not disabled form fields — a readOnly binding
@@ -542,9 +597,11 @@ class Component extends DCLogic {
       typedText: this.state.typedText,
       bouquetUnlocked: this.state.bouquetUnlocked,
       bouquetPetals: BOUQUET_PETAL_ANGLES,
-      openLetter: function () { self.setState({ view: 'letter' }); },
+      openLetter: doOpenLetter,
+      openLetterKey: keyActivate(doOpenLetter),
       closeLetter: function () { self.setState({ view: 'garden' }); },
-      backToGarden: function () { self.setState({ view: 'garden' }); },
+      backToGarden: doBackToGarden,
+      backToGardenKey: keyActivate(doBackToGarden),
       activeFlower: activeFlower || {},
       currentCaption: currentCaption,
       currentImageId: currentImageId,
@@ -554,9 +611,12 @@ class Component extends DCLogic {
       isLastSlide: isLastSlide,
       prevSlide: function () { self.setState(function (s) { return { activeSlide: Math.max(0, s.activeSlide - 1) }; }); },
       nextSlide: function () { self.setState(function (s) { return { activeSlide: s.activeSlide + 1 }; }); },
-      addMonth: function () { self.addMonth(); },
-      addPhotoSlide: function () { if (activeRaw) self.insertPhotoAfter(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); },
-      deletePhotoSlide: function () { if (activeRaw) self.deletePhotoAt(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); },
+      addMonth: doAddMonth,
+      addMonthKey: keyActivate(doAddMonth),
+      addPhotoSlide: doAddPhotoSlide,
+      addPhotoSlideKey: keyActivate(doAddPhotoSlide),
+      deletePhotoSlide: doDeletePhotoSlide,
+      deletePhotoSlideKey: keyActivate(doDeletePhotoSlide),
       canDeleteSlide: activeFlower && activeFlower.slides ? activeFlower.slides.length > 1 : false,
       currentDate: curMeta.date || '',
       currentLocation: curMeta.location || '',
@@ -572,13 +632,12 @@ class Component extends DCLogic {
       frameH: Math.round(frameH),
       frameInnerW: Math.round(rotated90 ? frameH : frameW),
       frameInnerH: Math.round(rotated90 ? frameW : frameH),
-      rotateImage: function () { if (currentImageId) self.rotateImage(currentImageId); },
-      deleteThisMonth: function () { if (activeRaw) { self.deleteMonth(activeRaw.id); self.setState({ view: 'garden' }); } },
-      resetProgress: function () {
-        STORE.set('viewedIds', []);
-        STORE.set('bouquetUnlocked', false);
-        self.setState({ viewedIds: [], bouquetUnlocked: false });
-      }
+      rotateImage: doRotateImage,
+      rotateImageKey: keyActivate(doRotateImage),
+      deleteThisMonth: doDeleteThisMonth,
+      deleteThisMonthKey: keyActivate(doDeleteThisMonth),
+      resetProgress: doResetProgress,
+      resetProgressKey: keyActivate(doResetProgress)
     };
   }
 }
