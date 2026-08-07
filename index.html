@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For my baby ♡</title>
+<script src="./config.js"></script>
+<script src="./host.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="./image-slot.js"></script>
+  <style>
+    body { margin: 0; }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0px 0px oklch(0.8 0.13 85 / 0.5); }
+      50% { box-shadow: 0 0 34px 10px oklch(0.8 0.13 85 / 0.55); }
+    }
+    @keyframes blink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; width: 100%; position: relative; overflow-x: hidden; overflow-y: auto; font-family: 'Quicksand', sans-serif; background: radial-gradient(ellipse at 20% 10%, oklch(0.97 0.015 85) 0%, oklch(0.94 0.02 78) 55%, oklch(0.9 0.025 70) 100%), repeating-linear-gradient(90deg, oklch(0.9 0.02 75 / 0.4) 0px, transparent 1px, transparent 3px), repeating-linear-gradient(0deg, oklch(0.9 0.02 75 / 0.25) 0px, transparent 1px, transparent 4px); box-shadow: inset 0 0 160px oklch(0.4 0.03 60 / 0.18);">
+
+  <sc-if value="{{ isGarden }}" hint-placeholder-val="{{ true }}">
+    <div style="position: relative; width: 100%; min-height: 100vh; overflow: visible; display: flex; flex-direction: column; align-items: center; padding: 18px 24px 150px; box-sizing: border-box;">
+
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 6px;">
+        <div style="text-align: center;">
+          <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 34px; color: oklch(0.4 0.05 30); letter-spacing: 0.5px;">For my baby ♡</div>
+          <div style="font-size: 12px; color: oklch(0.5 0.03 60); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;">ONE FLOWER FOR EACH MONTH...</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <sc-for list="{{ yearTabs }}" as="yt" hint-placeholder-count="1">
+          <div onClick="{{ yt.select }}" style="padding: 6px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; background: {{ yt.bg }}; color: {{ yt.color }}; border: 1.5px solid oklch(0.55 0.05 50 / 0.4);">{{ yt.label }}</div>
+        </sc-for>
+        <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ addMonth }}" style="padding: 6px 16px; border-radius: 999px; font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">+ add next month</div>
+        </sc-if>
+      </div>
+
+      <div style="position: relative; width: 100%; max-width: 980px; flex-shrink: 0; display: flex; flex-direction: column; gap: 18px; align-items: center;">
+
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 28px 20px; width: 100%;">
+          <sc-for list="{{ flowers }}" as="fl" hint-placeholder-count="10">
+            <div style="position: relative; width: 100%; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
+
+              <div onClick="{{ fl.select }}" onMouseEnter="{{ fl.onEnter }}" onMouseLeave="{{ fl.onLeave }}" style="position: relative; width: 68px; height: 68px; margin-bottom: -6px; transform: rotate({{ fl.rot }}); cursor: pointer; transition: transform 0.25s ease, filter 0.25s ease; filter: {{ fl.ringFilter }}; z-index: 2;" style-hover="transform: rotate({{ fl.rot }}) translateY(-6px) scale(1.12); filter: drop-shadow(0 6px 14px oklch(0.3 0.05 40 / 0.28));">
+                <sc-if value="{{ fl.isHovered }}" hint-placeholder-val="{{ false }}">
+                  <div style="position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%); background: oklch(0.3 0.03 50 / 0.92); color: oklch(0.97 0.01 90); padding: 5px 12px; border-radius: 8px; font-size: 13px; font-family: 'Quicksand', sans-serif; font-weight: 600; white-space: nowrap; pointer-events: none; z-index: 5;">{{ fl.month }}</div>
+                </sc-if>
+                <sc-if value="{{ fl.isBloom }}" hint-placeholder-val="{{ true }}">
+                  <sc-for list="{{ fl.petals }}" as="pt" hint-placeholder-count="6">
+                    <div style="position: absolute; top: 50%; left: 50%; width: 20px; height: 30px; margin: -15px 0 0 -10px; border-radius: 60% 60% 55% 55%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
+                  </sc-for>
+                  <div style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: {{ fl.centerColor }};"></div>
+                </sc-if>
+                <sc-if value="{{ fl.isSpike }}" hint-placeholder-val="{{ false }}">
+                  <sc-for list="{{ fl.florets }}" as="ft" hint-placeholder-count="5">
+                    <div style="position: absolute; bottom: {{ ft.y }}; left: 50%; width: {{ ft.size }}; height: {{ ft.size }}; margin-left: {{ ft.x }}; border-radius: 50%; background: {{ fl.petalColor }}; box-shadow: 0 0 0 1px oklch(0.5 0.03 60 / 0.35);"></div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ fl.viewed }}" hint-placeholder-val="{{ false }}">
+                  <div style="position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.55 0.06 145); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4;">✓</div>
+                </sc-if>
+                <sc-if value="{{ fl.canRemove }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ fl.remove }}" style="position: absolute; top: -6px; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.4 0.03 50 / 0.85); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 4; cursor: pointer;" style-hover="background: oklch(0.5 0.15 25);">✕</div>
+                </sc-if>
+              </div>
+
+              <div style="width: 3px; height: {{ fl.stemPx }}; background: linear-gradient(oklch(0.55 0.07 145), oklch(0.42 0.06 140)); z-index: 1;"></div>
+
+              <div style="position: relative; width: 58px; height: 66px; clip-path: polygon(10% 0%, 90% 0%, 74% 100%, 26% 100%); background: linear-gradient(160deg, oklch(0.7 0.06 {{ fl.vaseHue }} / 0.9), oklch(0.55 0.07 {{ fl.vaseHue }} / 0.95)); z-index: 0;">
+                <div style="position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 56px; height: 8px; border-radius: 50%; background: oklch(0.75 0.05 {{ fl.vaseHue }} / 0.95); border: 1.5px solid oklch(0.8 0.04 {{ fl.vaseHue }} / 0.7);"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ bouquetUnlocked }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ openLetter }}" style="width: 110px; height: 110px; cursor: pointer; animation: pulseGlow 2.4s ease-in-out infinite; border-radius: 50%; position: relative;" style-hover="transform: scale(1.1);">
+            <sc-for list="{{ bouquetPetals }}" as="pt" hint-placeholder-count="8">
+              <div style="position: absolute; top: 50%; left: 50%; width: 26px; height: 40px; margin: -20px 0 0 -13px; border-radius: 60% 60% 55% 55%; background: oklch(0.97 0.01 90); transform-origin: 50% 100%; transform: {{ pt.t }};"></div>
+            </sc-for>
+            <div style="position: absolute; top: 50%; left: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: oklch(0.8 0.13 85);"></div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); text-align: center; font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 3.5vw, 24px); font-style: italic; color: oklch(0.35 0.04 40); min-height: 34px; background: oklch(0.95 0.02 78 / 0.85); padding: 8px 28px; border-radius: 999px; backdrop-filter: blur(2px); white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis; z-index: 6;">
+        {{ typedText }}<span style="animation: blink 1.1s step-start infinite;">|</span>
+      </div>
+
+      <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ resetProgress }}" style="position: fixed; bottom: 10px; right: 16px; font-size: 11px; color: oklch(0.6 0.02 60); cursor: pointer; opacity: 0.5; z-index: 6;">reset memories</div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFlower }}" hint-placeholder-val="{{ false }}">
+    <div style="position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 24px 60px; animation: fadeUp 0.4s ease;">
+      <div onClick="{{ backToGarden }}" style="align-self: flex-start; font-size: 15px; color: oklch(0.5 0.06 145); cursor: pointer; margin-bottom: 8px; font-weight: 600;">← back to the garden</div>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: oklch(0.55 0.05 50);">{{ activeFlower.month }} · Year {{ activeFlower.year }}</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 38px; color: oklch(0.35 0.04 40);">{{ activeFlower.name }}</div>
+        <div style="font-size: 14px; font-style: italic; color: oklch(0.55 0.03 60);">{{ activeFlower.meaning }}</div>
+      </div>
+
+      <div style="position: relative; width: {{ frameW }}px; height: {{ frameH }}px; max-width: 88vw; max-height: 55vh; overflow: visible;">
+        <div style="position: absolute; top: 50%; left: 50%; width: {{ frameInnerW }}px; height: {{ frameInnerH }}px; transform: translate(-50%, -50%) rotate({{ currentRotation }}deg); transition: width 0.25s ease, height 0.25s ease, transform 0.25s ease; border-radius: 18px; overflow: hidden; border: 6px solid white; box-shadow: 0 12px 30px oklch(0.4 0.04 50 / 0.22);">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ currentImageId }}" shape="rect" fit="contain" placeholder="{{ currentImagePlaceholder }}" hint-size="100%,100%" style="width: 100%; height: 100%;"></x-import>
+        </div>
+      </div>
+
+      <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+          <div style="font-size: 12px; color: oklch(0.55 0.03 60);">double-click the photo to drag/zoom/crop it · Replace to swap it</div>
+          <div onClick="{{ rotateImage }}" style="font-size: 12px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 4px 10px; border: 1.5px solid oklch(0.55 0.05 50 / 0.4); border-radius: 999px; font-weight: 600; white-space: nowrap;" style-hover="background: oklch(0.95 0.02 78 / 0.7);">⟳ rotate</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMeta }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; justify-content: center;">
+          <sc-if value="{{ showDate }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <span style="font-size: 15px;">📅</span>
+              <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+                <input type="text" value="{{ currentDate }}" onChange="{{ setDate }}" placeholder="add a date" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 110px; outline: none; text-align: center;"></input>
+              </sc-if>
+              <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
+                <span style="font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40);">{{ currentDate }}</span>
+              </sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showLocation }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <span style="font-size: 15px;">📍</span>
+              <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+                <input type="text" value="{{ currentLocation }}" onChange="{{ setLocation }}" placeholder="add a location" style="border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.5); background: transparent; font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40); padding: 2px 4px; width: 140px; outline: none; text-align: center;"></input>
+              </sc-if>
+              <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
+                <span style="font-family: 'Quicksand', sans-serif; font-size: 14px; color: oklch(0.35 0.04 40);">{{ currentLocation }}</span>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+        <textarea value="{{ currentCaption }}" onChange="{{ setCaption }}" placeholder="write a caption for this photo" rows="2" style="max-width: 480px; width: 90%; text-align: center; font-size: 18px; line-height: 1.6; color: oklch(0.3 0.03 50); margin: 12px 20px 8px; font-family: 'Cormorant Garamond', serif; background: transparent; border: none; border-bottom: 1.5px dashed oklch(0.55 0.05 50 / 0.4); resize: none; outline: none; padding: 4px;"></textarea>
+      </sc-if>
+      <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width: 480px; width: 90%; text-align: center; font-size: 18px; line-height: 1.6; color: oklch(0.3 0.03 50); margin: 12px 20px 8px; font-family: 'Cormorant Garamond', serif;">{{ currentCaption }}</div>
+      </sc-if>
+
+      <div style="display: flex; gap: 8px; margin: 6px 0 22px;">
+        <sc-for list="{{ activeFlower.slides }}" as="sd" hint-placeholder-count="3">
+          <div onClick="{{ sd.go }}" style="width: 8px; height: 8px; border-radius: 50%; cursor: pointer; background: {{ sd.dotColor }};"></div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; gap: 14px;">
+        <sc-if value="{{ showPrev }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ prevSlide }}" style="padding: 12px 26px; border-radius: 999px; border: 1.5px solid oklch(0.55 0.05 50); background: transparent; color: oklch(0.4 0.05 40); font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;">Previous</button>
+        </sc-if>
+        <sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ nextSlide }}" style="padding: 12px 26px; border-radius: 999px; border: none; background: oklch(0.55 0.06 145); color: white; font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;">Next</button>
+        </sc-if>
+        <sc-if value="{{ isLastSlide }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ backToGarden }}" style="padding: 12px 26px; border-radius: 999px; border: none; background: oklch(0.55 0.1 25); color: white; font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;">Back to the garden, baby ♡</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; gap: 10px; margin-top: 14px;">
+          <div onClick="{{ addPhotoSlide }}" style="font-size: 13px; color: oklch(0.5 0.05 50); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.55 0.05 50 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.02 78 / 0.6);">+ insert a photo after this one</div>
+          <sc-if value="{{ canDeleteSlide }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ deletePhotoSlide }}" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this photo</div>
+          </sc-if>
+          <sc-if value="{{ activeFlower.isCustom }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ deleteThisMonth }}" style="font-size: 13px; color: oklch(0.5 0.15 25); cursor: pointer; padding: 6px 14px; border: 1.5px dashed oklch(0.5 0.15 25 / 0.5); border-radius: 999px; font-weight: 600;" style-hover="background: oklch(0.95 0.05 25 / 0.2);">delete this month</div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLetter }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: oklch(0.3 0.03 50 / 0.55); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 10; animation: fadeUp 0.35s ease; overflow-y: auto;">
+      <div style="max-width: 520px; width: 100%; background: oklch(0.97 0.015 80); border-radius: 18px; padding: 44px 40px; box-shadow: 0 20px 50px oklch(0.3 0.05 40 / 0.35); text-align: center; margin: auto;">
+        <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 30px; color: oklch(0.4 0.06 30); margin-bottom: 18px;">My baobae,</div>
+        <p style="font-size: 17px; line-height: 1.8; color: oklch(0.3 0.03 50); font-family: 'Cormorant Garamond', serif; text-align: left; margin: 0 0 14px;">Ten flowers, ten months, one very lucky bao. Every bloom in that vase is a little piece of a memory I never want to forget — the laughs, the inside jokes, the ordinary Tuesdays that somehow felt like the best days.</p>
+        <p style="font-size: 17px; line-height: 1.8; color: oklch(0.3 0.03 50); font-family: 'Cormorant Garamond', serif; text-align: left; margin: 0 0 14px;">Since November 7th, you've been my favorite person to text good morning, my favorite person to annoy, and my favorite person, period. Here's to every month after this one too.</p>
+        <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: oklch(0.4 0.06 30); margin: 20px 0 26px;">Happy Girlfriend Day, baby. I love you. — bubs</div>
+        <button onClick="{{ closeLetter }}" style="padding: 12px 30px; border-radius: 999px; border: none; background: oklch(0.55 0.1 25); color: white; font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;">Back to our garden</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const YEAR_MONTHS = [
+  { cycle: 0, month: 'November', name: 'Chrysanthemum', meaning: 'joy & loyalty', type: 'bloom', petalColor: 'oklch(0.72 0.15 70)', centerColor: 'oklch(0.58 0.15 50)' },
+  { cycle: 1, month: 'December', name: 'Narcissus', meaning: 'new beginnings', type: 'bloom', petalColor: 'oklch(0.9 0.015 95)', centerColor: 'oklch(0.8 0.14 85)' },
+  { cycle: 2, month: 'January', name: 'Carnation', meaning: 'devotion', type: 'bloom', petalColor: 'oklch(0.68 0.18 5)', centerColor: 'oklch(0.5 0.16 10)' },
+  { cycle: 3, month: 'February', name: 'Violet', meaning: 'faithfulness', type: 'bloom', petalColor: 'oklch(0.45 0.15 300)', centerColor: 'oklch(0.85 0.1 90)' },
+  { cycle: 4, month: 'March', name: 'Daffodil', meaning: 'rebirth', type: 'bloom', petalColor: 'oklch(0.8 0.16 95)', centerColor: 'oklch(0.65 0.18 55)' },
+  { cycle: 5, month: 'April', name: 'Daisy', meaning: 'innocence', type: 'bloom', petalColor: 'oklch(0.9 0.015 95)', centerColor: 'oklch(0.8 0.14 85)' },
+  { cycle: 6, month: 'May', name: 'Lily of the Valley', meaning: 'sweetness returns', type: 'spike', petalColor: 'oklch(0.9 0.015 120)', centerColor: 'oklch(0.9 0.015 120)' },
+  { cycle: 7, month: 'June', name: 'Rose', meaning: 'love', type: 'bloom', petalColor: 'oklch(0.5 0.19 20)', centerColor: 'oklch(0.35 0.15 20)' },
+  { cycle: 8, month: 'July', name: 'Larkspur', meaning: 'lightheartedness', type: 'spike', petalColor: 'oklch(0.55 0.16 275)', centerColor: 'oklch(0.55 0.16 275)' },
+  { cycle: 9, month: 'August', name: 'Gladiolus', meaning: 'strength & sincerity', type: 'spike', petalColor: 'oklch(0.68 0.17 35)', centerColor: 'oklch(0.68 0.17 35)' },
+  { cycle: 10, month: 'September', name: 'Aster', meaning: 'wisdom & valor', type: 'bloom', petalColor: 'oklch(0.55 0.14 320)', centerColor: 'oklch(0.85 0.14 85)' },
+  { cycle: 11, month: 'October', name: 'Marigold', meaning: 'warmth & creativity', type: 'bloom', petalColor: 'oklch(0.72 0.18 55)', centerColor: 'oklch(0.6 0.18 40)' }
+];
+
+const BASE_PHOTO_COUNTS = { 0: 5, 1: 3, 2: 2, 3: 3, 4: 2, 5: 4, 6: 5, 7: 2, 8: 4, 9: 1 };
+const STEMS = ['55px', '35px', '65px', '40px', '50px', '30px', '70px', '45px', '75px', '60px', '48px', '58px'];
+const ROTS = ['-4deg', '5deg', '-3deg', '8deg', '-6deg', '4deg', '-10deg', '-4deg', '6deg', '10deg', '-5deg', '7deg'];
+
+function makeFlower(year, cycle, photoCount) {
+  var info = YEAR_MONTHS[cycle];
+  return {
+    id: 'y' + year + '-c' + cycle,
+    year: year, cycle: cycle,
+    month: info.month, name: info.name, meaning: info.meaning, type: info.type,
+    petalColor: info.petalColor, centerColor: info.centerColor,
+    stemPx: STEMS[cycle], rot: ROTS[cycle],
+    photoCount: photoCount || 3
+  };
+}
+
+var BASE_FLOWERS = [];
+for (var c = 0; c <= 9; c++) BASE_FLOWERS.push(makeFlower(1, c, BASE_PHOTO_COUNTS[c]));
+var BASE_IDS = {};
+BASE_FLOWERS.forEach(function (f) { BASE_IDS[f.id] = true; });
+
+const PETAL_ANGLES = [0, 60, 120, 180, 240, 300].map(function (a) {
+  return { t: 'rotate(' + a + 'deg) translateY(-16px)' };
+});
+const BOUQUET_PETAL_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315].map(function (a) {
+  return { t: 'rotate(' + a + 'deg) translateY(-20px)' };
+});
+const FLORET_LAYOUT = [
+  { y: '0px', x: '-6px', size: '15px' },
+  { y: '13px', x: '6px', size: '14px' },
+  { y: '26px', x: '-5px', size: '13px' },
+  { y: '39px', x: '5px', size: '11px' },
+  { y: '50px', x: '0px', size: '9px' }
+];
+
+const SLIDE_CAPTIONS = {
+  'y1-c0': ['The month it all started, bao ♡ (drop our first photo here)', 'Still can\'t believe you said yes.', 'Loyal and joyful, just like you.', 'A memory from November.', 'A memory from November.'],
+  'y1-c1': ['Our first holiday season together.', 'New beginnings, cozy nights, you.', 'Paperwhite skies and warm hands.'],
+  'y1-c2': ['Ringing in a new year, together.', 'You + me, devoted from day one.'],
+  'y1-c3': ['A month made for us.', 'Faithful, silly, completely yours.', 'Violets and valentines.'],
+  'y1-c4': ['Spring crept in and so did we.', 'Daffodils and long drives.'],
+  'y1-c5': ['Innocent little memories from this month.', 'You, laughing at something dumb I said.', 'Simple days, favorite days.', 'A memory from April.'],
+  'y1-c6': ['Sweetness returning, right on time.', 'Small moments that meant a lot.', 'You in the sunlight, basically.', 'A memory from May.', 'A memory from May.'],
+  'y1-c7': ['The obvious flower for this one.', 'Rose season, our season.'],
+  'y1-c8': ['Lighthearted, sunburnt, happy.', 'Larkspur for the goofiest month.', 'Bao and bubs, summer edition.', 'A memory from July.'],
+  'y1-c9': ['Strength, sincerity, us against the heat.']
+};
+
+// Shared book state lives in book.json via host.js. Falls back to an in-memory
+// stub so the page still renders if host.js failed to load.
+var STORE = window.bookStore || {
+  canEdit: false,
+  get: function (k, d) { return d; },
+  set: function () {},
+  ready: function (cb) { cb({}); }
+};
+
+class Component extends DCLogic {
+  state = {
+    view: 'garden',
+    activeId: null,
+    activeSlide: 0,
+    viewedIds: [],
+    bouquetUnlocked: false,
+    typedText: '',
+    fullText: 'pick a flower to relive a memory, bao ♡',
+    hoveredId: null,
+    customFlowers: [],
+    extraSlideCounts: {},
+    activeYear: 1,
+    imageRotations: {},
+    imageAspect: {},
+    slideOrder: {},
+    slideMeta: {}
+  };
+
+  componentDidMount() {
+    var self = this;
+    STORE.ready(function (b) {
+      self.setState({
+        viewedIds: b.viewedIds || [],
+        bouquetUnlocked: !!b.bouquetUnlocked,
+        customFlowers: b.customFlowers || [],
+        extraSlideCounts: b.extraSlideCounts || {},
+        slideOrder: b.slideOrder || {},
+        slideMeta: b.slideMeta || {},
+        imageRotations: b.imageRotations || {}
+      });
+    });
+
+    var full = this.state.fullText;
+    var i = 0;
+    this._typeInterval = setInterval(function () {
+      i++;
+      self.setState({ typedText: full.slice(0, i) });
+      if (i >= full.length) clearInterval(self._typeInterval);
+    }, 55);
+  }
+
+  componentWillUnmount() {
+    if (this._typeInterval) clearInterval(this._typeInterval);
+  }
+
+  getSlideKeys(flowerId, defaultCount) {
+    var existing = this.state.slideOrder[flowerId];
+    if (existing) return existing;
+    var keys = [];
+    for (var i = 0; i < defaultCount; i++) keys.push('d' + i);
+    return keys;
+  }
+
+  saveSlideOrder(order) {
+    STORE.set('slideOrder', order);
+    this.setState({ slideOrder: order });
+  }
+
+  insertPhotoAfter(flowerId, afterIdx, defaultCount) {
+    var keys = this.getSlideKeys(flowerId, defaultCount).slice();
+    // Counter, not a clock: two inserts in the same millisecond would collide
+    // on Date.now() and silently share one photo slot.
+    var n = 0;
+    var taken = {};
+    keys.forEach(function (k) { taken[k] = true; });
+    while (taken['n' + n]) n++;
+    keys.splice(afterIdx + 1, 0, 'n' + n);
+    var order = Object.assign({}, this.state.slideOrder);
+    order[flowerId] = keys;
+    STORE.set('slideOrder', order);
+    this.setState({ slideOrder: order, activeSlide: afterIdx + 1 });
+  }
+
+  deletePhotoAt(flowerId, idx, defaultCount) {
+    var keys = this.getSlideKeys(flowerId, defaultCount).slice();
+    if (keys.length <= 1) return;
+    keys.splice(idx, 1);
+    var order = Object.assign({}, this.state.slideOrder);
+    order[flowerId] = keys;
+    STORE.set('slideOrder', order);
+    this.setState({ slideOrder: order, activeSlide: Math.max(0, Math.min(idx, keys.length - 1)) });
+  }
+
+  addMonth() {
+    var all = BASE_FLOWERS.concat(this.state.customFlowers);
+    var last = all[all.length - 1];
+    var nextCycle = (last.cycle + 1) % 12;
+    var nextYear = nextCycle === 0 ? last.year + 1 : last.year;
+    var list = this.state.customFlowers.concat([makeFlower(nextYear, nextCycle, 1)]);
+    STORE.set('customFlowers', list);
+    this.setState({ customFlowers: list, activeYear: nextYear });
+  }
+
+  deleteMonth(id) {
+    var list = this.state.customFlowers.filter(function (f) { return f.id !== id; });
+    var extra = Object.assign({}, this.state.extraSlideCounts);
+    delete extra[id];
+    var viewed = this.state.viewedIds.filter(function (v) { return v !== id; });
+    STORE.set('customFlowers', list);
+    STORE.set('extraSlideCounts', extra);
+    STORE.set('viewedIds', viewed);
+    this.setState({ customFlowers: list, extraSlideCounts: extra, viewedIds: viewed });
+  }
+
+  ensureMeasure(imageId) {
+    if (!imageId || this.state.imageAspect[imageId]) return;
+    if (this._measuring === imageId) return;
+    this._measuring = imageId;
+    var self = this;
+    var tries = 0;
+    function attempt() {
+      var el = document.getElementById(imageId);
+      var img = el && el.shadowRoot && el.shadowRoot.querySelector('.frame img');
+      if (img && img.naturalWidth && img.naturalHeight) {
+        var next = Object.assign({}, self.state.imageAspect);
+        next[imageId] = { w: img.naturalWidth, h: img.naturalHeight };
+        self.setState({ imageAspect: next });
+        self._measuring = null;
+        return;
+      }
+      tries++;
+      if (tries < 40) setTimeout(attempt, 150);
+      else self._measuring = null;
+    }
+    attempt();
+  }
+
+  rotateImage(imageId) {
+    var rot = Object.assign({}, this.state.imageRotations);
+    rot[imageId] = ((rot[imageId] || 0) + 90) % 360;
+    STORE.set('imageRotations', rot);
+    this.setState({ imageRotations: rot });
+  }
+
+  setSlideMeta(imageId, field, value) {
+    var meta = Object.assign({}, this.state.slideMeta);
+    meta[imageId] = Object.assign({ date: '', location: '', caption: '' }, meta[imageId], { [field]: value });
+    STORE.set('slideMeta', meta);
+    this.setState({ slideMeta: meta });
+  }
+
+  selectFlower(id) {
+    var ids = this.state.viewedIds.indexOf(id) === -1 ? this.state.viewedIds.concat([id]) : this.state.viewedIds;
+    var allFlowers = BASE_FLOWERS.concat(this.state.customFlowers);
+    var nowAllViewed = allFlowers.length > 0 && allFlowers.every(function (f) { return ids.indexOf(f.id) !== -1; });
+    var unlocked = this.state.bouquetUnlocked || nowAllViewed;
+    STORE.set('viewedIds', ids);
+    if (unlocked && !this.state.bouquetUnlocked) STORE.set('bouquetUnlocked', true);
+    this.setState({ view: 'flower', activeId: id, activeSlide: 0, viewedIds: ids, bouquetUnlocked: unlocked });
+  }
+
+  renderVals() {
+    var self = this;
+    var canEdit = !!STORE.canEdit;
+    var viewedIds = this.state.viewedIds;
+    var ALL_FLOWERS = BASE_FLOWERS.concat(this.state.customFlowers);
+
+    var years = [];
+    ALL_FLOWERS.forEach(function (f) { if (years.indexOf(f.year) === -1) years.push(f.year); });
+    years.sort(function (a, b) { return a - b; });
+
+    var yearTabs = years.map(function (y) {
+      var active = y === self.state.activeYear;
+      return {
+        label: 'Year ' + y,
+        bg: active ? 'oklch(0.55 0.06 145)' : 'transparent',
+        color: active ? 'white' : 'oklch(0.4 0.05 40)',
+        select: function () { self.setState({ activeYear: y }); }
+      };
+    });
+
+    var flowersInYear = ALL_FLOWERS.filter(function (f) { return f.year === self.state.activeYear; });
+
+    var flowers = flowersInYear.map(function (f) {
+      var viewed = viewedIds.indexOf(f.id) !== -1;
+      var isCustom = !BASE_IDS[f.id];
+      return Object.assign({}, f, {
+        viewed: viewed,
+        ringFilter: viewed ? 'drop-shadow(0 0 6px oklch(0.55 0.06 145 / 0.6))' : 'none',
+        isBloom: f.type === 'bloom',
+        isSpike: f.type === 'spike',
+        petals: PETAL_ANGLES,
+        florets: FLORET_LAYOUT,
+        vaseHue: (f.cycle * 23 + 25),
+        isHovered: self.state.hoveredId === f.id,
+        isCustom: isCustom,
+        canRemove: isCustom && canEdit,
+        select: function () { self.selectFlower(f.id); },
+        onEnter: function () { self.setState({ hoveredId: f.id }); },
+        onLeave: function () { self.setState({ hoveredId: null }); },
+        remove: function (e) { if (e && e.stopPropagation) e.stopPropagation(); self.deleteMonth(f.id); }
+      });
+    });
+
+    var activeRaw = ALL_FLOWERS.filter(function (f) { return f.id === self.state.activeId; })[0];
+    var activeFlower = null;
+    var currentCaption = '';
+    var currentImageId = '';
+    var currentImagePlaceholder = '';
+    var showPrev = false, showNext = false, isLastSlide = false;
+
+    if (activeRaw) {
+      var baseCount = activeRaw.photoCount || 1;
+      var extraCount = self.state.extraSlideCounts[activeRaw.id] || 0;
+      var slideKeys = self.getSlideKeys(activeRaw.id, baseCount + extraCount);
+      var presetCaptions = SLIDE_CAPTIONS[activeRaw.id] || [];
+      var idx = Math.min(self.state.activeSlide, slideKeys.length - 1);
+
+      var slides = slideKeys.map(function (key, i) {
+        var imgIdForKey = 'img-' + activeRaw.id + '-' + key;
+        var savedCap = self.state.slideMeta[imgIdForKey] && self.state.slideMeta[imgIdForKey].caption;
+        var cap;
+        if (savedCap !== undefined && savedCap !== null) cap = savedCap;
+        else if (key.charAt(0) === 'd') cap = presetCaptions[parseInt(key.slice(1), 10)] || ('A memory from ' + activeRaw.month + '.');
+        else cap = 'A memory from ' + activeRaw.month + '.';
+        return {
+          caption: cap,
+          dotColor: i === idx ? 'oklch(0.55 0.1 25)' : 'oklch(0.85 0.02 60)',
+          go: function () { self.setState({ activeSlide: i }); }
+        };
+      });
+
+      activeFlower = Object.assign({}, activeRaw, { slides: slides, isCustom: !BASE_IDS[activeRaw.id] });
+      currentCaption = slides[idx] ? slides[idx].caption : '';
+      currentImageId = 'img-' + activeRaw.id + '-' + slideKeys[idx];
+      currentImagePlaceholder = canEdit
+        ? 'Drop a photo from ' + activeRaw.month + ' — double-click to resize/reframe'
+        : '';
+      showPrev = idx > 0;
+      isLastSlide = idx === slides.length - 1;
+      showNext = !isLastSlide;
+      self.ensureMeasure(currentImageId);
+    }
+
+    var rotationDeg = currentImageId ? (self.state.imageRotations[currentImageId] || 0) : 0;
+    var aspect = currentImageId ? self.state.imageAspect[currentImageId] : null;
+    var baseRatio = aspect ? (aspect.w / aspect.h) : (4 / 3);
+    var rotated90 = rotationDeg === 90 || rotationDeg === 270;
+    var displayRatio = rotated90 ? (1 / baseRatio) : baseRatio;
+    var maxW = 440, maxH = 460;
+    var frameW, frameH;
+    if (displayRatio >= maxW / maxH) { frameW = maxW; frameH = maxW / displayRatio; }
+    else { frameH = maxH; frameW = maxH * displayRatio; }
+
+    var curMeta = currentImageId ? (self.state.slideMeta[currentImageId] || {}) : {};
+
+    return {
+      canEdit: canEdit,
+      // Visitors get plain text, not disabled form fields — a readOnly binding
+      // on <input>/<textarea> did not survive the template compile, and a
+      // typable-but-unsaved box is worse than no box.
+      readOnly: !canEdit,
+      isGarden: this.state.view === 'garden',
+      isFlower: this.state.view === 'flower',
+      isLetter: this.state.view === 'letter',
+      yearTabs: yearTabs,
+      flowers: flowers,
+      typedText: this.state.typedText,
+      bouquetUnlocked: this.state.bouquetUnlocked,
+      bouquetPetals: BOUQUET_PETAL_ANGLES,
+      openLetter: function () { self.setState({ view: 'letter' }); },
+      closeLetter: function () { self.setState({ view: 'garden' }); },
+      backToGarden: function () { self.setState({ view: 'garden' }); },
+      activeFlower: activeFlower || {},
+      currentCaption: currentCaption,
+      currentImageId: currentImageId,
+      currentImagePlaceholder: currentImagePlaceholder,
+      showPrev: showPrev,
+      showNext: showNext,
+      isLastSlide: isLastSlide,
+      prevSlide: function () { self.setState(function (s) { return { activeSlide: Math.max(0, s.activeSlide - 1) }; }); },
+      nextSlide: function () { self.setState(function (s) { return { activeSlide: s.activeSlide + 1 }; }); },
+      addMonth: function () { self.addMonth(); },
+      addPhotoSlide: function () { if (activeRaw) self.insertPhotoAfter(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); },
+      deletePhotoSlide: function () { if (activeRaw) self.deletePhotoAt(activeRaw.id, self.state.activeSlide, activeRaw.photoCount + (self.state.extraSlideCounts[activeRaw.id] || 0)); },
+      canDeleteSlide: activeFlower && activeFlower.slides ? activeFlower.slides.length > 1 : false,
+      currentDate: curMeta.date || '',
+      currentLocation: curMeta.location || '',
+      // Hide empty metadata rows from visitors instead of showing bare icons.
+      showDate: canEdit || !!curMeta.date,
+      showLocation: canEdit || !!curMeta.location,
+      showMeta: canEdit || !!curMeta.date || !!curMeta.location,
+      setDate: function (e) { if (currentImageId) self.setSlideMeta(currentImageId, 'date', e.target.value); },
+      setLocation: function (e) { if (currentImageId) self.setSlideMeta(currentImageId, 'location', e.target.value); },
+      setCaption: function (e) { if (currentImageId) self.setSlideMeta(currentImageId, 'caption', e.target.value); },
+      currentRotation: rotationDeg,
+      frameW: Math.round(frameW),
+      frameH: Math.round(frameH),
+      frameInnerW: Math.round(rotated90 ? frameH : frameW),
+      frameInnerH: Math.round(rotated90 ? frameW : frameH),
+      rotateImage: function () { if (currentImageId) self.rotateImage(currentImageId); },
+      deleteThisMonth: function () { if (activeRaw) { self.deleteMonth(activeRaw.id); self.setState({ view: 'garden' }); } },
+      resetProgress: function () {
+        STORE.set('viewedIds', []);
+        STORE.set('bouquetUnlocked', false);
+        self.setState({ viewedIds: [], bouquetUnlocked: false });
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>
