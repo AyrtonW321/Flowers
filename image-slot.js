@@ -225,6 +225,17 @@
     if (!w) return;
     saving = true;
     Promise.resolve(w(STATE_FILE, JSON.stringify(slots)))
+      .then((resolved) => {
+        // A host may swap a large inline value (e.g. a data: URL) for a
+        // smaller committed reference before persisting — GitHub-as-backend
+        // does this so the sidecar doesn't balloon with base64. Adopt that
+        // back into our own copy of `slots`; without this every later save
+        // keeps resending every earlier photo's full original bytes too,
+        // since nothing ever told this module they'd been swapped out.
+        if (resolved && typeof resolved === 'object') {
+          for (const id in resolved) slots[id] = resolved[id];
+        }
+      })
       .catch(() => {})
       .then(() => { saving = false; if (saveDirty) { saveDirty = false; save(); } });
   }

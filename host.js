@@ -167,7 +167,12 @@
       .then(function () {
         return putFile(STATE_FILE, b64FromText(JSON.stringify(state, null, 2)), 'update photo slots');
       })
-      .then(function () { setStatus('saved'); });
+      // Resolve with the rewritten state (data: URLs swapped for their
+      // committed URLs) so image-slot.js's save() can adopt it back into
+      // its own copy — otherwise it keeps resending every earlier photo's
+      // full original bytes on every later save, forever, for the rest of
+      // the page's lifetime.
+      .then(function () { setStatus('saved'); return state; });
   }
 
   // ── image-slot host bridge ──────────────────────────────────────────────
