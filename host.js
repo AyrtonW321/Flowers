@@ -183,6 +183,25 @@
         return enqueue(function () { return saveState(contents); });
       }
     };
+
+    // image-slot's "Replace" button dispatches this expecting a host-owned
+    // picker (Unsplash search + local import, in the design-tool runtime this
+    // component was built for). Nothing here ever listened for it, so
+    // Replace silently did nothing. A native file input feeding the same
+    // _ingest() drag-and-drop already uses is the local-import half of that
+    // contract, without needing an Unsplash integration.
+    document.addEventListener('image-slot:pick', function (e) {
+      var slot = e.target;
+      if (!slot || typeof slot._ingest !== 'function') return;
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png,image/jpeg,image/webp,image/avif';
+      input.addEventListener('change', function () {
+        var f = input.files && input.files[0];
+        if (f) slot._ingest(f);
+      });
+      input.click();
+    });
   }
 
   // ── Read shim ───────────────────────────────────────────────────────────
