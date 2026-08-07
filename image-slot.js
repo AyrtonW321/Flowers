@@ -1061,12 +1061,14 @@
       this.toggleAttribute('data-editable', editable);
       this._sub.style.display = editable ? '' : 'none';
 
-      // Content. The sidecar is also writable by the agent's write_file
-      // tool, so its value isn't guaranteed canvas-originated — only accept
-      // data:image/ URLs from it. The `src` attribute is author-controlled
-      // (Claude wrote it into the HTML) so it passes through unchanged.
+      // Content. The sidecar is only ever written by this project's own
+      // host.js, through the token-gated GitHub commit path — not by an
+      // untrusted write_file tool — so a raw.githubusercontent.com URL for
+      // *this* repo is as trustworthy as an inline data: URL. host.js moves
+      // uploads out of the sidecar into their own committed file precisely
+      // so book.json/sidecar stay small instead of ballooning with base64.
       let stored = this.id ? getSlot(this.id) : this._local;
-      if (stored && stored.u && !/^data:image\//i.test(stored.u)) stored = null;
+      if (stored && stored.u && !/^(data:image\/|https:\/\/raw\.githubusercontent\.com\/AyrtonW321\/[Ff]lowers\/)/i.test(stored.u)) stored = null;
       const srcAttr = this.getAttribute('src') || '';
       this._userUrl = (stored && stored.u) || null;
       const url = this._userUrl || srcAttr;
