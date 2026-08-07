@@ -364,6 +364,12 @@
     '.ctl:popover-open{position:fixed;inset:auto;transform:translateX(-100%)}' +
     ':host([data-filled][data-editable]:hover) .ctl,:host([data-reframe]) .ctl' +
     '  {opacity:1;pointer-events:auto}' +
+    // A touchscreen has no hover state at all, so the rule above never
+    // fires there — Replace/rotate/crop would be permanently invisible and
+    // untappable on any phone. (hover:none) is the standard touch-vs-mouse
+    // media query; make the controls always-on for touch instead of trying
+    // to fake a hover.
+    '@media (hover:none){:host([data-filled][data-editable]) .ctl{opacity:1;pointer-events:auto}}' +
     '.ctl button{appearance:none;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;' +
     '  background:rgba(0,0,0,.65);color:#fff;font:11px/1 system-ui,-apple-system,sans-serif;' +
     '  backdrop-filter:blur(6px)}' +
