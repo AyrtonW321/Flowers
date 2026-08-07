@@ -8,7 +8,8 @@
     "y1-c5",
     "y1-c6",
     "y1-c7",
-    "y1-c8"
+    "y1-c8",
+    "y1-c9"
   ],
   "slideOrder": {
     "y1-c5": [
@@ -17,5 +18,6 @@
       "d2",
       "n0"
     ]
-  }
+  },
+  "bouquetUnlocked": true
 }
