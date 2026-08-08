@@ -8,7 +8,8 @@
     "y1-c3",
     "y1-c4",
     "y1-c5",
-    "y1-c6"
+    "y1-c6",
+    "y1-c7"
   ],
   "slideOrder": {
     "y1-c5": [
@@ -21,7 +22,7 @@
       "d0"
     ]
   },
-  "bouquetUnlocked": false,
+  "bouquetUnlocked": true,
   "slideMeta": {
     "img-y1-c0-d0": {
       "date": "Nov 1",
