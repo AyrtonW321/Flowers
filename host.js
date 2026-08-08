@@ -33,16 +33,22 @@
   var m = /[#&]key=([^&]+)/.exec(location.hash);
   if (m) {
     token = decodeURIComponent(m[1]);
-    try { localStorage.setItem('gh-edit-token', token); } catch (e) {}
+    try {
+      localStorage.setItem('gh-edit-token', token);
+    } catch (e) {}
     history.replaceState(null, '', location.pathname + location.search);
   } else {
-    try { token = localStorage.getItem('gh-edit-token'); } catch (e) {}
+    try {
+      token = localStorage.getItem('gh-edit-token');
+    } catch (e) {}
   }
   var canEdit = !!(token && CFG.owner && CFG.repo);
 
   // ── GitHub Contents API ─────────────────────────────────────────────────
-  var shaCache = {};
-
+  // No sha cache: every write re-reads the current sha from GitHub right
+  // before it PUTs. A cached sha goes stale the moment anything else (another
+  // tab, another device, an edit on github.com) commits in between, and that
+  // staleness is exactly what produces the 409 this file used to see.
   function b64FromText(str) {
     // btoa is latin1-only; captions contain ♡ and other non-ASCII.
     // Chunked because String.fromCharCode.apply blows the stack somewhere
@@ -64,13 +70,19 @@
   }
 
   function getSha(path) {
-    if (Object.prototype.hasOwnProperty.call(shaCache, path)) {
-      return Promise.resolve(shaCache[path]);
-    }
+    // Always hits the API — no cache. This is the fix: reusing a sha from an
+    // earlier read/write is exactly how a write ends up 409ing against a
+    // version of the file it never saw.
     return fetch(API + path + '?ref=' + encodeURIComponent(CFG.branch), { headers: ghHeaders() })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { return (shaCache[path] = j && j.sha ? j.sha : null); })
-      .catch(function () { return null; });
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (j) {
+        return j && j.sha ? j.sha : null;
+      })
+      .catch(function () {
+        return null;
+      });
   }
 
   function putFileOnce(path, b64, message) {
@@ -84,30 +96,41 @@
       }).then(function (r) {
         if (!r.ok) {
           return r.text().then(function (t) {
-            // A stale sha means someone (or another tab, or another write in
-            // this same batch) committed first. Drop the cached sha so a
-            // retry re-reads the real current version instead of repeating
-            // the same guess.
-            delete shaCache[path];
             var err = new Error('GitHub ' + r.status + ' on ' + path + ': ' + t.slice(0, 200));
             err.status = r.status;
             throw err;
           });
         }
         return r.json();
-      }).then(function (j) {
-        shaCache[path] = j && j.content ? j.content.sha : null;
-        return j;
       });
     });
   }
 
-  function putFile(path, b64, message) {
-    // A 409 (sha conflict) is an expected race between two writes to the
-    // same file, not a real failure — one retry with the freshly re-read
-    // sha resolves it. Anything else (401/403/network) surfaces as-is.
+  function putFile(path, b64, message, attempt) {
+    attempt = attempt || 1;
+    // A 409 (sha conflict) means someone else — another tab, another device,
+    // a direct github.com edit — committed between our GET and our PUT.
+    // getSha() always re-reads on every call (including retries), so a retry
+    // is a genuine "try again with what's actually there now", not a repeat
+    // of the same stale guess. Retry a few times with a short backoff in
+    // case of a fast back-to-back race, then give up loudly instead of
+    // quietly dropping the user's edit.
     return putFileOnce(path, b64, message).catch(function (err) {
-      if (err && err.status === 409) return putFileOnce(path, b64, message);
+      if (err && err.status === 409 && attempt < 4) {
+        var delay = 300 * attempt;
+        return new Promise(function (resolve) {
+          setTimeout(resolve, delay);
+        }).then(function () {
+          return putFile(path, b64, message, attempt + 1);
+        });
+      }
+      if (err && err.status === 409) {
+        err.message =
+          'Save conflict on ' +
+          path +
+          ': someone else saved changes at the same time. ' +
+          'Reload the page to get the latest version before editing again.';
+      }
       throw err;
     });
   }
@@ -154,25 +177,40 @@
   function enqueue(fn) {
     chain = chain.then(fn).catch(function (err) {
       console.error('[host] write failed:', err);
-      setStatus('save failed — see console', true);
+      var msg =
+        err && err.status === 409 ? 'save conflict — reload page' : 'save failed — see console';
+      setStatus(msg, true);
     });
     return chain;
   }
 
   function saveState(json) {
     var state;
-    try { state = JSON.parse(json); } catch (e) { return Promise.resolve(); }
+    try {
+      state = JSON.parse(json);
+    } catch (e) {
+      return Promise.resolve();
+    }
     setStatus('saving photo…');
-    return extractPhotos(state)
-      .then(function () {
-        return putFile(STATE_FILE, b64FromText(JSON.stringify(state, null, 2)), 'update photo slots');
-      })
-      // Resolve with the rewritten state (data: URLs swapped for their
-      // committed URLs) so image-slot.js's save() can adopt it back into
-      // its own copy — otherwise it keeps resending every earlier photo's
-      // full original bytes on every later save, forever, for the rest of
-      // the page's lifetime.
-      .then(function () { setStatus('saved'); return state; });
+    return (
+      extractPhotos(state)
+        .then(function () {
+          return putFile(
+            STATE_FILE,
+            b64FromText(JSON.stringify(state, null, 2)),
+            'update photo slots'
+          );
+        })
+        // Resolve with the rewritten state (data: URLs swapped for their
+        // committed URLs) so image-slot.js's save() can adopt it back into
+        // its own copy — otherwise it keeps resending every earlier photo's
+        // full original bytes on every later save, forever, for the rest of
+        // the page's lifetime.
+        .then(function () {
+          setStatus('saved');
+          return state;
+        })
+    );
   }
 
   // ── image-slot host bridge ──────────────────────────────────────────────
@@ -180,7 +218,9 @@
     window.omelette = {
       writeFile: function (path, contents) {
         if (String(path).indexOf(STATE_FILE) === -1) return Promise.resolve();
-        return enqueue(function () { return saveState(contents); });
+        return enqueue(function () {
+          return saveState(contents);
+        });
       }
     };
 
@@ -215,8 +255,12 @@
     var u = typeof input === 'string' ? input : (input && input.url) || '';
     if (!/^https?:/i.test(u) && u.indexOf(STATE_FILE) !== -1) {
       return origFetch(RAW + '/' + STATE_FILE + '?t=' + Date.now(), init)
-        .then(function (r) { return r.ok ? r : origFetch(input, init); })
-        .catch(function () { return origFetch(input, init); });
+        .then(function (r) {
+          return r.ok ? r : origFetch(input, init);
+        })
+        .catch(function () {
+          return origFetch(input, init);
+        });
     }
     return origFetch(input, init);
   };
@@ -232,8 +276,11 @@
     if (!canEdit) return;
     setStatus('saving…');
     enqueue(function () {
-      return putFile(BOOK_FILE, b64FromText(JSON.stringify(book, null, 2)), 'update book')
-        .then(function () { setStatus('saved'); });
+      return putFile(BOOK_FILE, b64FromText(JSON.stringify(book, null, 2)), 'update book').then(
+        function () {
+          setStatus('saved');
+        }
+      );
     });
   }
 
@@ -256,12 +303,22 @@
   };
 
   origFetch(RAW + '/' + BOOK_FILE + '?t=' + Date.now())
-    .then(function (r) { return r.ok ? r.json() : {}; })
-    .catch(function () { return {}; })
+    .then(function (r) {
+      return r.ok ? r.json() : {};
+    })
+    .catch(function () {
+      return {};
+    })
     .then(function (j) {
       book = j && typeof j === 'object' ? j : {};
       isReady = true;
-      readyCbs.forEach(function (cb) { try { cb(book); } catch (e) { console.error(e); } });
+      readyCbs.forEach(function (cb) {
+        try {
+          cb(book);
+        } catch (e) {
+          console.error(e);
+        }
+      });
       readyCbs = [];
     });
 
@@ -282,12 +339,17 @@
     statusEl.style.background = sticky ? 'oklch(0.5 0.15 25)' : 'oklch(0.55 0.06 145)';
     statusEl.style.opacity = '1';
     clearTimeout(statusTimer);
-    if (!sticky) statusTimer = setTimeout(function () { statusEl.style.opacity = '0'; }, 1800);
+    if (!sticky)
+      statusTimer = setTimeout(function () {
+        statusEl.style.opacity = '0';
+      }, 1800);
   }
 
   if (canEdit) {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () { setStatus('edit mode'); });
+      document.addEventListener('DOMContentLoaded', function () {
+        setStatus('edit mode');
+      });
     } else {
       setStatus('edit mode');
     }
