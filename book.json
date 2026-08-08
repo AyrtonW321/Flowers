@@ -171,35 +171,6 @@
       "caption": "Big potato stuff"
     }
   },
-  "customFlowers": [
-    {
-      "id": "y1-c10",
-      "year": 1,
-      "cycle": 10,
-      "month": "September",
-      "name": "Aster",
-      "meaning": "wisdom & valor",
-      "type": "bloom",
-      "petalColor": "oklch(0.55 0.14 320)",
-      "centerColor": "oklch(0.85 0.14 85)",
-      "stemPx": "48px",
-      "rot": "-5deg",
-      "photoCount": 1
-    },
-    {
-      "id": "y1-c11",
-      "year": 1,
-      "cycle": 11,
-      "month": "October",
-      "name": "Marigold",
-      "meaning": "warmth & creativity",
-      "type": "bloom",
-      "petalColor": "oklch(0.72 0.18 55)",
-      "centerColor": "oklch(0.6 0.18 40)",
-      "stemPx": "58px",
-      "rot": "7deg",
-      "photoCount": 1
-    }
-  ],
+  "customFlowers": [],
   "extraSlideCounts": {}
 }
