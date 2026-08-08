@@ -199,20 +199,7 @@
       "stemPx": "58px",
       "rot": "7deg",
       "photoCount": 1
-    },
-    {
-      "id": "y2-c0",
-      "year": 2,
-      "cycle": 0,
-      "month": "November",
-      "name": "Chrysanthemum",
-      "meaning": "joy & loyalty",
-      "type": "bloom",
-      "petalColor": "oklch(0.72 0.15 70)",
-      "centerColor": "oklch(0.58 0.15 50)",
-      "stemPx": "55px",
-      "rot": "-4deg",
-      "photoCount": 1
     }
-  ]
+  ],
+  "extraSlideCounts": {}
 }
